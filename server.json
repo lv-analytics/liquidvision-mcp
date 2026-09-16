@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "app.liquidvision/derivatives",
+  "title": "LiquidVision — Crypto Derivatives Data",
+  "description": "Exchange-exact open interest and funding across 12 crypto derivatives venues, plus server-computed conclusions: liquidation cascades, positioning regime, funding dispersion, order-book microstructure, market brief, AI analyst. 24 tools, no auth needed.",
+  "version": "1.0.0",
+  "websiteUrl": "https://liquidvision.app/data",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://liquidvision.app/mcp"
+    }
+  ]
+}
