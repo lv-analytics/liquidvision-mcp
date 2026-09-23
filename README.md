@@ -76,18 +76,10 @@ curl -X POST https://liquidvision.app/mcp \
   estimating, so totals understate the whole market.
 - Liquidation maps and heatmaps are **modeled** from candles and OI deltas —
   estimates of where leverage would break, not exchange-disclosed orders.
+  Exception: `get_hl_liquidation_map` is **measured** from real Hyperliquid
+  positions (largest accounts only).
 - Symbols are `BASEUSDT` (`BTCUSDT`, `ETHUSDT`, ...). Computed views accept a
   fixed set of window sizes; other values snap to the nearest.
 
 More for agents: https://liquidvision.app/llms.txt · REST/OpenAPI:
 https://liquidvision.app/api/v1/docs
-
-## In this repo
-
-- `server.json` — MCP Registry manifest (remote, streamable HTTP, no auth).
-- `collectors/gmx_v2.py` — GMX v2 (Arbitrum) open interest, hourly funding and
-  on-chain liquidations, standalone, JSON lines to stdout. The same collector
-  runs in production.
-- `examples/binance_liq_probe.py` — reproduces the Binance liquidation stream
-  finding: silent on `fstream`, alive on `dstream`, OKX as control.
-- `docs/coinglass-vs-exchanges.md` — the aggregator comparison, with curl commands.
