@@ -7,8 +7,8 @@ API key needed.
 
 ## What it gives an agent
 
-Open interest and funding rates across 12 venues (Binance, MEXC, Bybit,
-Bitget, Hyperliquid, HTX, Gate, OKX, KuCoin, BingX, Aster, Kraken Futures),
+Open interest and funding rates across 13 venues (Binance, MEXC, Bybit,
+Bitget, Hyperliquid, HTX, Gate, OKX, KuCoin, BingX, Aster, Kraken Futures, GMX on Arbitrum),
 served **exactly as the exchanges publish them** — no haircuts, no doubling
 (some aggregators halve Bitget's OI and double Gate's; we don't).
 
@@ -29,7 +29,7 @@ Plus raw data: `get_funding_rates`, `get_funding_history`, `get_open_interest`,
 `get_long_short_ratio`, `get_liquidations`, `get_liquidations_summary`,
 `get_liquidation_map`, `get_liquidation_heatmap`, `get_orderbook_heatmap`,
 `get_footprint`, `get_cvd`, `get_spoofing`, `get_top_traders`,
-`get_token_unlocks`, `get_stocks`. 24 tools total.
+`get_token_unlocks`, `get_stocks`. 27 tools total.
 
 ## Connect
 
@@ -70,9 +70,10 @@ curl -X POST https://liquidvision.app/mcp \
   `Authorization: Bearer lv_...`.
 - `explain_market` costs real money to run: 5 answers/day anonymous, 25 with
   a free key.
-- Liquidation events cover OKX, Bybit, HTX, Gate, Kraken and Hyperliquid whale
-  accounts. Binance and Bitget stopped publishing liquidations; we report none
-  for them rather than estimating, so totals understate the whole market.
+- Liquidation events cover Binance (exchange-throttled to one order per symbol
+  per second), OKX, Bybit, HTX, Gate, Kraken and Hyperliquid whale accounts.
+  Bitget stopped publishing liquidations; we report none for it rather than
+  estimating, so totals understate the whole market.
 - Liquidation maps and heatmaps are **modeled** from candles and OI deltas —
   estimates of where leverage would break, not exchange-disclosed orders.
 - Symbols are `BASEUSDT` (`BTCUSDT`, `ETHUSDT`, ...). Computed views accept a
@@ -80,3 +81,13 @@ curl -X POST https://liquidvision.app/mcp \
 
 More for agents: https://liquidvision.app/llms.txt · REST/OpenAPI:
 https://liquidvision.app/api/v1/docs
+
+## In this repo
+
+- `server.json` — MCP Registry manifest (remote, streamable HTTP, no auth).
+- `collectors/gmx_v2.py` — GMX v2 (Arbitrum) open interest, hourly funding and
+  on-chain liquidations, standalone, JSON lines to stdout. The same collector
+  runs in production.
+- `examples/binance_liq_probe.py` — reproduces the Binance liquidation stream
+  finding: silent on `fstream`, alive on `dstream`, OKX as control.
+- `docs/coinglass-vs-exchanges.md` — the aggregator comparison, with curl commands.

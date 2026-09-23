@@ -1,4 +1,4 @@
-# We checked Coinglass against the exchanges' own APIs. Two venues don't match.
+# We checked Coinglass against the exchanges' own APIs. Two venues don't match — and it caught two of our own bugs.
 
 *Draft for Show HN / r/algotrading / X. Every number below can be reproduced
 with the curl commands at the end; dates are the two days we ran the check.*
@@ -43,28 +43,45 @@ gap is scope, not error: they include CME, coin-margined contracts, options
 and a longer venue list. We only note it so nobody reads "twice as much
 data" as "twice as accurate".
 
-## Liquidations: the part nobody labels
+## Liquidations: where we were the ones who were wrong
 
-Binance's public liquidation stream (`!forceOrder@arr`) still exists in the
-docs and still accepts a subscription — `LIST_SUBSCRIPTIONS` echoes it back.
-It just never sends anything. We held a subscription open for ten minutes,
-market-wide and per-symbol across twenty busy perps, from two different
-networks, while an OKX control subscription delivered 258 events in the same
-window. Zero. Bitget's `liquidation` channel acknowledges the subscription for
-`default` and for specific symbols alike, and is equally silent.
+An earlier draft of this post accused Coinglass of estimating Binance
+liquidations. We're leaving the story in, because the correction is more
+useful than the accusation.
 
-Coinglass shows Binance liquidations anyway — $57M of BTC longs in the 24h we
-looked at — and nothing on the page says they are estimated. They must be,
-because the exchange does not publish them. We chose the other option: the
-Binance and Bitget rows in our liquidation feed are empty, and the page says
-why. Our 24h liquidation total is therefore smaller than the market's; it is
-also a number rather than a guess.
+Binance's public liquidation stream (`!forceOrder@arr`) is in the docs and
+accepts a subscription on `fstream.binance.com` — `LIST_SUBSCRIPTIONS` echoes
+it back — and then never sends anything. We held it open for ten minutes,
+market-wide and per-symbol across twenty busy perps, from two networks, while
+an OKX control subscription delivered 258 events. Zero. We concluded Binance
+had quietly stopped publishing, shipped an empty Binance row with an
+explanation, and ran like that for a month.
+
+Then we lined our 4-hour liquidation totals up against Coinglass: Bybit $8.72M
+vs $8.74M, OKX $7.32M vs $7.32M, HTX $1.43M vs $1.41M — and Binance $0 vs
+$58.2M, 67% of the market. A number that size is not an estimate; somebody
+was receiving it. The same stream name on the **`dstream.binance.com`** host —
+nominally the COIN-M endpoint — delivers the USDT-M liquidation orders:
+ZILUSDT, AVAXUSDT, BNBUSDT, about 35 events a minute in a quiet market. We
+have no explanation for why it lives there; it is not in the changelog.
+Binance throttles the stream to the latest order per symbol per second, so
+any total built on it (ours, Coinglass's, anyone's) is a floor, not a census.
+
+The same comparison caught a second mistake of ours: Gate. We were reading
+5-minute aggregates for three symbols because we believed Gate had no public
+event feed. It does — `/futures/usdt/liq_orders` without a `contract`
+parameter returns the whole market — and our $0.01M became comparable with
+Coinglass's $9.0M.
+
+Bitget's `liquidation` channel still acknowledges the subscription and stays
+silent. Coinglass shows a small Bitget figure; we don't know its source, and
+our Bitget row stays empty until we do.
 
 ## What we think this means
 
 Not that Coinglass is bad. That a derivatives aggregator has to make method
-calls — whether to trust an exchange's OI, how to treat a venue that stopped
-publishing — and that those calls should be visible on the page. Ours are:
+calls — whether to trust an exchange's OI, how to treat a venue that went quiet
+— and that those calls should be visible on the page. Ours are:
 open interest and funding are served exactly as each exchange reports them,
 funding APR uses each contract's real settlement cycle, liquidation coverage
 is stated per venue, and the liquidation maps are labeled as the models they
@@ -84,9 +101,9 @@ curl -s "https://api.bitget.com/api/v2/mix/market/open-interest?symbol=BTCUSDT&p
 curl -s https://liquidvision.app/api/v1/oiboard/BTCUSDT
 ```
 
-The Binance liquidation test is a 40-line Python script (websockets,
-`!forceOrder@arr` vs OKX `liquidation-orders`, ten minutes); we'll put it in
-the repo with the post.
+The Binance host test is [`examples/binance_liq_probe.py`](../examples/binance_liq_probe.py) (websockets, the same
+`!forceOrder@arr` on fstream vs dstream, OKX as control). Run it yourself:
+`pip install websockets && python examples/binance_liq_probe.py 120`.
 
 ---
 *LiquidVision — crypto derivatives data for bots and AI agents.
