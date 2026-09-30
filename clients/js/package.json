@@ -1,0 +1,13 @@
+{
+  "name": "liquidvision",
+  "version": "0.1.0",
+  "description": "Client for the LiquidVision crypto derivatives data API: open interest, funding, liquidations, liquidation maps, Hyperliquid whale positions, history exports, webhook alerts",
+  "type": "module",
+  "main": "index.js",
+  "exports": { ".": "./index.js" },
+  "files": ["index.js", "README.md"],
+  "engines": { "node": ">=18" },
+  "keywords": ["crypto", "derivatives", "liquidations", "open-interest", "funding-rate", "hyperliquid", "trading-bot"],
+  "homepage": "https://liquidvision.app",
+  "license": "MIT"
+}

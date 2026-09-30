@@ -3,6 +3,30 @@
 *Draft for Show HN / r/algotrading / X. Every number below can be reproduced
 with the curl commands at the end; dates are the two days we ran the check.*
 
+> **Update, 30 Sep 2026.** Four things below have moved since this was written.
+>
+> 1. **One side or two.** Bybit documents its `openInterest` as "the sum of both
+>    sides" and publishes `singleOpenInterest` next to it, exactly half. HTX
+>    documents its open interest as "sum of both buy and sell sides". So the
+>    Bybit row in the first table is a two-sided figure on both sides of the
+>    comparison, and Gate's "2x" is the same thing: Coinglass shows Gate's
+>    two-sided `contract_stats` number, we showed the one-sided `position_size`.
+>    Neither is an error; they are different conventions, and nobody labels
+>    them. We now serve one side on every venue (Bybit's single-side field,
+>    Gate and HTX halved), which makes venues comparable and our Bybit, Gate
+>    and HTX figures half of what aggregators show.
+> 2. **Bitget liquidations exist.** The v2 `liquidation` channel is silent, the
+>    v3 one (`wss://ws.bitget.com/v3/ws/public`, topic `liquidation`) delivers.
+>    Like Binance's, it is throttled: the largest order per side per contract
+>    per second.
+> 3. **Binance's stream has an official home:** `fstream.binance.com/market/ws/`.
+>    It carries the same events as the `dstream` host we found.
+> 4. **Our Gate liquidation totals were too high.** We counted `size` (the
+>    position being liquidated) where the order is `order_size`; a position
+>    closed in steps was counted again at every step. The "$9.0M comparable"
+>    line below was measured with that bug. Fixed, and the history re-read from
+>    Gate.
+
 Coinglass is the default source for crypto derivatives data, and for most of
 its numbers that trust is earned. We build a competing (much smaller) data
 service, so we did the obvious thing before claiming anything: pulled the
@@ -93,6 +117,13 @@ are.
 # Gate BTC open interest (one side, in BTC): position_size * quanto_multiplier
 curl -s https://api.gateio.ws/api/v4/futures/usdt/contracts/BTC_USDT | grep -oE '"(position_size|quanto_multiplier|mark_price)": *"?[0-9.]+'
 
+# Bybit BTC open interest: the exchange documents openInterest as "the sum of both
+# sides" and publishes the single side next to it. We serve the single side.
+curl -s "https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT" | grep -oE '"(openInterest|singleOpenInterest)":"[^"]*"'
+
+# HTX BTC open interest: documented as "sum of both buy and sell sides"; we halve it.
+curl -s "https://api.hbdm.com/linear-swap-api/v1/swap_open_interest?contract_code=BTC-USDT"
+
 # Bitget BTC open interest, two endpoints that agree with each other
 curl -s "https://api.bitget.com/api/v2/mix/market/ticker?symbol=BTCUSDT&productType=usdt-futures" | grep -oE '"(holdingAmount|markPrice)":"[^"]*"'
 curl -s "https://api.bitget.com/api/v2/mix/market/open-interest?symbol=BTCUSDT&productType=usdt-futures"
@@ -101,9 +132,9 @@ curl -s "https://api.bitget.com/api/v2/mix/market/open-interest?symbol=BTCUSDT&p
 curl -s https://liquidvision.app/api/v1/oiboard/BTCUSDT
 ```
 
-The Binance host test is [`examples/binance_liq_probe.py`](../examples/binance_liq_probe.py) (websockets, the same
-`!forceOrder@arr` on fstream vs dstream, OKX as control). Run it yourself:
-`pip install websockets && python examples/binance_liq_probe.py 120`.
+The Binance host test is a 40-line Python script (websockets, the same
+`!forceOrder@arr` on fstream vs dstream, OKX as control); we'll put it in
+the repo with the post.
 
 ---
 *LiquidVision — crypto derivatives data for bots and AI agents.

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "liquidvision"
+version = "0.1.0"
+description = "Client for the LiquidVision crypto derivatives data API: open interest, funding, liquidations, liquidation maps, Hyperliquid whale positions, history exports, webhook alerts"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["crypto", "derivatives", "liquidations", "open interest", "funding rate", "hyperliquid", "trading bot"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://liquidvision.app"
+Documentation = "https://liquidvision.app/llms.txt"
+
+[tool.setuptools]
+packages = ["liquidvision"]
