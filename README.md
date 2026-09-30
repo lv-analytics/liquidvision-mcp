@@ -90,6 +90,18 @@ lv.hl_whales(coin="BTC", max_dist_pct=5)["positions"]
 lv.export("liquidations", symbol="BTCUSDT", start="2026-09-01", end="2026-09-08")
 ```
 
+## Examples
+
+- [`examples/passivbot_funding_filter.py`](examples/passivbot_funding_filter.py): keeps
+  [Passivbot](https://github.com/enarjord/passivbot) out of coins where holding the
+  position is expensive (funding annualized with the contract's real interval) or where a
+  liquidation cascade is running. Writes the `ignored_coins` file Passivbot reads
+  continuously. Standard library only, no key:
+  `python examples/passivbot_funding_filter.py --exchange bybit --once`
+- [`examples/binance_liq_probe.py`](examples/binance_liq_probe.py): which Binance host
+  actually delivers the liquidation stream.
+- [`collectors/gmx_v2.py`](collectors/gmx_v2.py): a standalone GMX v2 (Arbitrum) collector.
+
 ## Limits and honesty
 
 - Free and anonymous: 240 requests/min per IP. A free key raises it to 300;
