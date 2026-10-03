@@ -3,7 +3,7 @@
 Crypto derivatives data for AI agents and trading bots: a remote MCP server,
 no install, no API key needed.
 
-**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 36 tools, read-only)
+**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 37 tools, read-only)
 
 ## What it gives an agent
 
@@ -29,9 +29,10 @@ Measured, not modeled (Hyperliquid, where positions are public):
 
 | Tool | Returns |
 |---|---|
-| `get_hl_whales` | Leveraged positions of the 3000 largest accounts with exchange-reported liquidation prices, closest to liquidation first |
+| `get_hl_whales` | Leveraged positions of the 10,000 largest accounts with exchange-reported liquidation prices, closest to liquidation first |
 | `get_hl_account` | One address: live positions, liquidation prices, archived snapshots |
 | `get_hl_liquidation_map` | Those positions binned by liquidation price |
+| `get_hl_builder_markets` | Builder-deployed (HIP-3) perp markets on Hyperliquid: equity indices, stocks, commodities, with open interest, volume, funding |
 
 Raw data: `get_funding_rates`, `get_funding_history`, `get_funding_settlements`,
 `get_open_interest`, `get_open_interest_history`, `get_oi_board`,
