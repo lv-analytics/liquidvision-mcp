@@ -5,6 +5,8 @@ no install, no API key needed.
 
 **Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 39 tools, read-only)
 
+**Registry:** `server.json` in this repo is the manifest for the Official MCP Registry (`io.github.lv-analytics/liquidvision`); also listed on [Glama](https://glama.ai/mcp/connectors/app.liquidvision/derivatives) and in [awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers).
+
 ## What it gives an agent
 
 Open interest and funding rates across 13 venues (Binance, MEXC, Bybit, Bitget,
