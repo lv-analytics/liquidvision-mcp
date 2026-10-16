@@ -1,4 +1,4 @@
-# LiquidVision MCP server
+# LiquidVision.app — MCP server for crypto derivatives data
 
 Crypto derivatives data for AI agents and trading bots: a remote MCP server,
 no install, no API key needed.
