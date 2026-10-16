@@ -23,11 +23,13 @@ not a pile of ticks:
 | `get_liquidation_cascades` | Liquidations grouped into events: start, duration, multiples of normal, what price did |
 | `get_positioning_regime` | Price direction x change in positions per coin: new longs, short covering, new shorts, long flush |
 | `get_funding_dispersion` | Coins ranked by how far funding disagrees across venues, each leg annualized with its real settlement cycle |
+| `get_funding_arbitrage` | Realized funding carry per coin: what the short-richest / long-cheapest pair earned over 7 and 30 days, share of positive hours, mark gap now |
+| `get_tokenized_stocks` | Tokenized stocks, indices, commodities, FX and pre-IPO names as perps on Lighter, Hyperliquid builder markets, Ostium and gTrade: OI, volume, funding, cross-venue price gap |
 | `get_microstructure` | Cross-venue spread, top-of-book depth, basis |
 | `get_market_brief` | One deterministic risk brief for a symbol: feed it to your own model |
 | `explain_market` | "Why did BTC drop 4%?": a grounded answer built from the live data |
 
-Measured, not modeled (Hyperliquid, where positions are public):
+Measured, not modeled (Hyperliquid and Lighter, where positions are public):
 
 | Tool | Returns |
 |---|---|
@@ -46,7 +48,8 @@ Raw data: `get_funding_rates`, `get_funding_history`, `get_funding_settlements`,
 `get_arbitrum_perps`, `get_top_traders`, `get_token_unlocks`, `get_stocks`.
 
 For bots: `get_api_key` (a free key by email, without a browser),
-`get_history` (archive rows as CSV for backtests), `create_alert`,
+`get_history` (archive rows as CSV for backtests), `list_history_packages`
+(monthly Parquet files per dataset with rows, bytes and sha256; Pro: this and last month, Bot: all), `create_alert`,
 `list_alerts`, `delete_alert` (webhooks: a liquidation cascade ended, a
 Hyperliquid whale is near liquidation, price reached a large modeled cluster).
 
