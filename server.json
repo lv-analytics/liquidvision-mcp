@@ -1,14 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.lv-analytics/liquidvision",
+  "name": "app.liquidvision/derivatives",
   "title": "LiquidVision — Crypto Derivatives Data",
   "description": "Exchange-exact crypto derivatives data for AI agents: OI, funding, liquidations, 13 venues, 42 tools",
+  "version": "1.3.0",
+  "websiteUrl": "https://liquidvision.app",
   "repository": {
     "url": "https://github.com/lv-analytics/liquidvision-mcp",
     "source": "github"
   },
-  "version": "1.3.0",
-  "websiteUrl": "https://liquidvision.app",
   "remotes": [
     {
       "type": "streamable-http",
