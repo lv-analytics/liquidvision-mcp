@@ -7,8 +7,10 @@ description: Read the crypto derivatives market through LiquidVision.app — exc
 
 Use this skill when the user asks anything about crypto perpetual futures: who is long or short,
 where leverage sits, what got liquidated, what funding costs, whether a move is new money or
-short covering, or wants derivatives history for research. All data is public, read-only and
-free to call; no key is needed.
+short covering, or wants derivatives history for research. All data is public and read-only.
+The conclusions (brief, regime, cascades, maps, dispersion, carry, microstructure, tokenized
+stocks) and the lite MCP server are free without a key; raw rows per contract, history and
+alerts need a Pro/Bot key or one USDC payment per call (x402).
 
 ## Three ways in, pick the first that fits
 

@@ -3,7 +3,7 @@
 Crypto derivatives data for AI agents and trading bots: a remote MCP server,
 no install, no API key needed.
 
-**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 42 tools, read-only)
+**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 42 tools, read-only; the raw-row tools need a Pro/Bot key sent as `X-API-Key`, the conclusion tools do not)
 **Lite endpoint:** `https://liquidvision.app/mcp/lite` — the 13 tools that return conclusions (brief, explain, regime, cascades, dispersion, carry, microstructure, three liquidation maps, tokenized stocks, accuracy). Start here if your agent answers questions; use the full server for raw rows, history and alerts.
 **Discovery:** `/.well-known/agent-card.json`, `/.well-known/mcp.json`, `/.well-known/x402.json`; worked examples at `/llms-full.txt`.
 
@@ -123,7 +123,7 @@ lv.package("liquidations", "2026-08", "liq_2026-08.parquet")
 
 ## Limits and honesty
 
-- Free and anonymous: 240 requests/min per IP. A free key raises it to 300;
+- Free and anonymous: the conclusion tools and the lite server, 60 requests/min per IP (120 with a free key); raw-row tools need a Pro/Bot key or x402;
   send it as `X-API-Key` or `Authorization: Bearer lv_...`. Paid plans (history
   exports, webhook alerts, higher limits): https://liquidvision.app/pricing
 - `explain_market` costs real money to run: 5 answers/day anonymous, 25 with a

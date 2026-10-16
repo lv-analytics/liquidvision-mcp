@@ -1,8 +1,8 @@
 """LiquidVision.app API client. Standard library only; x402 pay-per-call needs `eth-account`.
 
     from liquidvision import LiquidVision
-    lv = LiquidVision()                      # no key: live data, shared anonymous limits
-    lv = LiquidVision(api_key="lv_...")      # free key: 300 req/min; Pro/Bot: history, alerts
+    lv = LiquidVision()                      # no key: the conclusions only (brief, regime, cascades, maps, carry), 60/min per IP
+    lv = LiquidVision(api_key="lv_...")      # free key: 120/min on the conclusions; Pro/Bot: raw rows, history, alerts
 
     lv.brief("BTCUSDT")                      # one coin, one JSON: the place to start
     lv.regime(240)                           # who is driving the move: new longs / short covering / ...

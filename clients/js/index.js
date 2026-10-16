@@ -3,7 +3,7 @@
  *
  *   import { LiquidVision } from "liquidvision";
  *   const lv = new LiquidVision();                     // no key: live data, shared anonymous limits
- *   const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 300 req/min; Pro/Bot: history, alerts
+ *   const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 120/min on the conclusions; Pro/Bot: raw rows, history, alerts
  *
  *   await lv.brief("BTCUSDT");          // one coin, one JSON: the place to start
  *   await lv.regime(240);               // who is driving the move

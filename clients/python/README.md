@@ -14,8 +14,8 @@ pip install "liquidvision[x402]"    # + pay per call in USDC without an account 
 ```python
 from liquidvision import LiquidVision
 
-lv = LiquidVision()                       # no key: live data, shared anonymous limits (240/min per IP)
-# lv = LiquidVision(api_key="lv_...")     # free key: 300/min; Pro/Bot keys: history windows, alerts
+lv = LiquidVision()                       # no key: the conclusions (brief, regime, cascades, maps, carry...), 60/min per IP
+# lv = LiquidVision(api_key="lv_...")     # free key: 120/min on the conclusions; Pro/Bot keys: raw rows, history, alerts
 
 lv.brief("BTCUSDT")          # one coin, one JSON: liquidations by window, funding extremes, OI by venue, risk zones
 lv.regime(240)               # who is driving the move: new_longs / short_covering / new_shorts / long_flush per coin
