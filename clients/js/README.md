@@ -12,7 +12,7 @@ npm install liquidvision
 ```js
 import { LiquidVision } from "liquidvision";
 
-const lv = new LiquidVision();                       // no key: live data, shared anonymous limits
+const lv = new LiquidVision();                       // no key: the conclusions only (brief, regime, cascades, maps, carry), 60/min per IP
 // const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 120/min on the conclusions; Pro/Bot: raw rows, history, alerts
 
 await lv.brief("BTCUSDT");        // one coin, one JSON
