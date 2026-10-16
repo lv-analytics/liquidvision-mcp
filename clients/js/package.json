@@ -1,13 +1,14 @@
 {
   "name": "liquidvision",
-  "version": "0.1.0",
-  "description": "Client for the LiquidVision crypto derivatives data API: open interest, funding, liquidations, liquidation maps, Hyperliquid whale positions, history exports, webhook alerts",
+  "version": "0.2.0",
+  "description": "Client for LiquidVision.app, exchange-exact crypto derivatives data for bots and AI agents: open interest, funding, liquidations, measured Hyperliquid and Lighter liquidation maps, cascades, tokenized stocks on DEXs, history exports and Parquet packages, x402 pay-per-call",
   "type": "module",
   "main": "index.js",
   "exports": { ".": "./index.js" },
   "files": ["index.js", "README.md"],
   "engines": { "node": ">=18" },
-  "keywords": ["crypto", "derivatives", "liquidations", "open-interest", "funding-rate", "hyperliquid", "trading-bot"],
+  "keywords": ["crypto", "derivatives", "liquidations", "open-interest", "funding-rate", "hyperliquid", "lighter", "trading-bot", "ai-agent", "mcp", "x402"],
   "homepage": "https://liquidvision.app",
+  "repository": { "type": "git", "url": "https://github.com/lv-analytics/liquidvision-mcp", "directory": "clients/js" },
   "license": "MIT"
 }

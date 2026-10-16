@@ -4,21 +4,27 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "liquidvision"
-version = "0.1.0"
-description = "Client for the LiquidVision crypto derivatives data API: open interest, funding, liquidations, liquidation maps, Hyperliquid whale positions, history exports, webhook alerts"
+version = "0.2.0"
+description = "Client for LiquidVision.app, exchange-exact crypto derivatives data for bots and AI agents: open interest, funding, liquidations, measured Hyperliquid and Lighter liquidation maps, cascades, tokenized stocks on DEXs, history exports and Parquet packages, x402 pay-per-call"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-keywords = ["crypto", "derivatives", "liquidations", "open interest", "funding rate", "hyperliquid", "trading bot"]
+keywords = ["crypto", "derivatives", "liquidations", "open interest", "funding rate", "hyperliquid", "lighter", "trading bot", "ai agent", "mcp", "x402"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Topic :: Office/Business :: Financial",
+    "Intended Audience :: Developers",
 ]
+
+[project.optional-dependencies]
+x402 = ["eth-account>=0.10"]
 
 [project.urls]
 Homepage = "https://liquidvision.app"
 Documentation = "https://liquidvision.app/llms.txt"
+Source = "https://github.com/lv-analytics/liquidvision-mcp"
+MCP = "https://liquidvision.app/mcp/lite"
 
 [tool.setuptools]
 packages = ["liquidvision"]

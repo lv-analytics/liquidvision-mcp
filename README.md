@@ -87,17 +87,26 @@ curl -X POST https://liquidvision.app/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
+## Claude Code skill
+
+Copy [`skills/liquidvision`](skills/liquidvision) into `~/.claude/skills/` (or a project's `.claude/skills/`).
+It tells the agent which tool answers which question, how to read measured vs modeled data,
+and how to pay per file with x402 when history is needed.
+
 ## Without MCP
 
 The same data is a REST API and a WebSocket feed (`https://liquidvision.app/llms.txt`
-lists every endpoint). Two small clients live in [`clients/`](clients):
-Python (standard library only) and JavaScript (built-in `fetch`).
+lists every endpoint). Two small clients live in [`clients/`](clients): Python (standard library only; `pip install "liquidvision[x402]"` for
+pay-per-call) and JavaScript (built-in `fetch`; bring any EIP-712 signer for pay-per-call). Both start at `brief()`.
 
 ```python
 from liquidvision import LiquidVision
 lv = LiquidVision()
+lv.brief("BTCUSDT")                                    # one coin, one JSON
 lv.hl_whales(coin="BTC", max_dist_pct=5)["positions"]
 lv.export("liquidations", symbol="BTCUSDT", start="2026-09-01", end="2026-09-08")
+lv = LiquidVision(payer=X402Payer("0x..."))             # pay per file in USDC without an account
+lv.package("liquidations", "2026-08", "liq_2026-08.parquet")
 ```
 
 ## Examples
