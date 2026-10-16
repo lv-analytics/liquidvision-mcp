@@ -4,6 +4,8 @@ Crypto derivatives data for AI agents and trading bots: a remote MCP server,
 no install, no API key needed.
 
 **Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 42 tools, read-only)
+**Lite endpoint:** `https://liquidvision.app/mcp/lite` — the 13 tools that return conclusions (brief, explain, regime, cascades, dispersion, carry, microstructure, three liquidation maps, tokenized stocks, accuracy). Start here if your agent answers questions; use the full server for raw rows, history and alerts.
+**Discovery:** `/.well-known/agent-card.json`, `/.well-known/mcp.json`, `/.well-known/x402.json`; worked examples at `/llms-full.txt`.
 
 **Registry:** `server.json` in this repo is the manifest for the Official MCP Registry (`io.github.lv-analytics/liquidvision`); also listed on [Glama](https://glama.ai/mcp/connectors/app.liquidvision/derivatives) and in [awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers).
 
