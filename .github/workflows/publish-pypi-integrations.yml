@@ -4,7 +4,8 @@ name: publish-pypi-integrations
 #   tag lc-v*      -> integrations/langchain  (langchain-liquidvision)
 #   tag crewai-v*  -> integrations/crewai     (crewai-liquidvision)
 # PyPI side, per project: Publishing -> pending publisher, owner lv-analytics,
-# repo liquidvision-mcp, workflow publish-pypi-integrations.yml, environment pypi.
+# repo liquidvision-mcp, workflow publish-pypi-integrations.yml, environment pypi
+# (langchain) or pypi-crewai (crewai): PyPI refuses two pending projects with one config.
 on:
   push:
     tags: ["lc-v*", "crewai-v*"]
@@ -19,12 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dir: ${{ steps.pick.outputs.dir }}
+      env: ${{ steps.pick.outputs.env }}
     steps:
       - id: pick
         run: |
           ref="${GITHUB_REF_NAME}"; in="${{ inputs.package }}"
-          if [ "$in" = crewai ] || [[ "$ref" == crewai-v* ]]; then echo "dir=crewai" >> "$GITHUB_OUTPUT"; mod=crewai_liquidvision
-          else echo "dir=langchain" >> "$GITHUB_OUTPUT"; mod=langchain_liquidvision; fi
+          if [ "$in" = crewai ] || [[ "$ref" == crewai-v* ]]; then echo "dir=crewai" >> "$GITHUB_OUTPUT"; echo "env=pypi-crewai" >> "$GITHUB_OUTPUT"; mod=crewai_liquidvision
+          else echo "dir=langchain" >> "$GITHUB_OUTPUT"; echo "env=pypi" >> "$GITHUB_OUTPUT"; mod=langchain_liquidvision; fi
           echo "MOD=$mod" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,7 +45,7 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
-    environment: pypi
+    environment: ${{ needs.build.outputs.env }}
     permissions:
       id-token: write
     steps:
