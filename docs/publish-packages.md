@@ -45,3 +45,20 @@ once a `.claude-plugin/marketplace.json` is added (next step if the skill gets t
 - Update the install lines in `README.md` (they already say `pip install liquidvision` / `npm install liquidvision`).
 - Mention both packages in `https://liquidvision.app/llms.txt` and the Data page.
 - Post once from @LVisionLab: "pip install liquidvision — the derivatives market in one JSON, and your agent can pay per file in USDC".
+
+## ElizaOS plugin — `plugin-liquidvision` — built and tested, publish pending (owner step)
+
+Code in `integrations/elizaos/plugin-liquidvision` (6 actions + 1 provider over the free
+endpoints; built against @elizaos/core 1.7.2; `npm test` runs every action against the live API).
+The registry repo `elizaos-plugins/registry` returned 404 on 2026-10-17, so the route is npm:
+ElizaOS installs any npm package named `plugin-*` (`elizaos plugins add plugin-liquidvision`),
+and the `elizaos-plugins` keyword lists it in npm searches. One-time, with the same `npm login`
+as the JS client:
+
+```bash
+cd integrations/elizaos/plugin-liquidvision
+npm install && npm run build && npm test
+npm publish --access public
+```
+If the registry comes back, `elizaos publish` from the same folder opens the registry PR
+(logo and banner are in `images/`).

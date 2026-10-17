@@ -1,0 +1,41 @@
+{
+  "name": "plugin-liquidvision",
+  "version": "0.1.0",
+  "description": "ElizaOS plugin for LiquidVision.app: exchange-exact crypto derivatives context for agents — open interest, liquidations, cascades, positioning regime (new longs vs short covering), measured Hyperliquid liquidation maps, funding dispersion across 13 venues, tokenized stocks on DEXs. Read-only, no key needed.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" }
+  },
+  "files": ["dist", "README.md", "images"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node test/smoke.mjs"
+  },
+  "keywords": ["elizaos", "elizaos-plugins", "plugin", "crypto", "derivatives", "liquidations", "open-interest", "funding-rate", "hyperliquid", "trading", "market-data", "liquidvision"],
+  "author": "LiquidVision.app",
+  "license": "MIT",
+  "homepage": "https://liquidvision.app",
+  "repository": { "type": "git", "url": "https://github.com/lv-analytics/liquidvision-mcp", "directory": "integrations/elizaos/plugin-liquidvision" },
+  "peerDependencies": { "@elizaos/core": "^1.7.2" },
+  "devDependencies": { "@elizaos/core": "^1.7.2", "typescript": "^5.6.0" },
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginParameters": {
+      "LIQUIDVISION_API_KEY": {
+        "type": "string",
+        "required": false,
+        "sensitive": true,
+        "description": "Optional LiquidVision.app key (lv_...). Not needed: every action uses the free endpoints. A Pro/Bot key raises the rate limit from 60 to 600/1,200 requests a minute."
+      },
+      "LIQUIDVISION_BASE_URL": {
+        "type": "string",
+        "required": false,
+        "sensitive": false,
+        "description": "API base URL, default https://liquidvision.app/api/v1."
+      }
+    }
+  }
+}
