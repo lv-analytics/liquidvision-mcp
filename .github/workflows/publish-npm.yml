@@ -1,0 +1,32 @@
+name: publish-npm
+
+# Publishes clients/js to npm with trusted publishing (OIDC, provenance): no
+# token stored anywhere. npm side: package settings -> Trusted publisher ->
+# GitHub Actions, owner lv-analytics, repo liquidvision-mcp, workflow
+# publish-npm.yml, environment npm. The package must exist once before a
+# trusted publisher can be attached (first publish from the owner's machine
+# with `npm publish --access public`), or be created through the same UI.
+on:
+  push:
+    tags: ["js-v*"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: clients/js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install -g npm@latest
+      - run: node -e "import('./index.js').then(m => console.log('ok', m.VERSION))"
+      - run: npm publish --access public --provenance
