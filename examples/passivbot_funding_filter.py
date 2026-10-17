@@ -26,8 +26,8 @@ Usage
 Coverage: about 90 contracts per exchange (the top-100 coins by market cap that
 have a perpetual). A coin outside that set is never added to the list.
 
-Data: https://liquidvision.app (free, 240 requests a minute without a key; this
-script makes 2 per run). It is a filter built on public data, not advice and
+Data: https://liquidvision.app (free endpoints, 60 requests a minute without a key;
+this script makes 2 per run). It is a filter built on public data, not advice and
 not a signal with a track record: check the thresholds against your own config.
 """
 from __future__ import annotations
@@ -54,15 +54,16 @@ def coin(symbol: str) -> str:
 
 
 def funding_apr(exchange: str) -> dict[str, float]:
-    """coin -> annualized funding in % on one exchange (positive = longs pay)."""
+    """coin -> annualized funding in % on one exchange (positive = longs pay).
+
+    Read from /funding/dispersion (free): every leg there is already annualized
+    with the contract's own settlement cycle and, for hourly venues, ranked on
+    an 8-hour mean, which is what a position actually pays."""
     out = {}
-    for r in get("/funding"):
-        if r.get("exchange") != exchange or r.get("stale") or r.get("funding_rate") is None:
-            continue
-        hours = float(r.get("funding_hours") or 8)
-        # contracts that settle faster than 8 h carry an 8-hour average of their rate
-        rate = r.get("funding_rate_8h_avg", r["funding_rate"])
-        out[coin(r["symbol"])] = rate * 8760 / hours * 100
+    for row in get("/funding/dispersion?min_venues=2&limit=200").get("rows", []):
+        for leg in row.get("legs", []):
+            if leg.get("exchange") == exchange and leg.get("apr") is not None:
+                out[coin(row["symbol"])] = float(leg["apr"])
     return out
 
 

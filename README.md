@@ -109,6 +109,12 @@ lv = LiquidVision(payer=X402Payer("0x..."))             # pay per file in USDC w
 lv.package("liquidations", "2026-08", "liq_2026-08.parquet")
 ```
 
+## Integrations
+
+Drop-in pieces for agent frameworks and trading bots, all on the free endpoints and fail-open:
+[ElizaOS plugin](integrations/elizaos/plugin-liquidvision), [Freqtrade guard](integrations/freqtrade/LiquidVisionGuard.py),
+[Hummingbot cascade guard](integrations/hummingbot/liquidvision_cascade_guard.py). Overview: [`integrations/`](integrations).
+
 ## Examples
 
 - [`examples/passivbot_funding_filter.py`](examples/passivbot_funding_filter.py): keeps
