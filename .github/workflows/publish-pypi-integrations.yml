@@ -1,0 +1,56 @@
+name: publish-pypi-integrations
+
+# Publishes the agent-framework wrappers to PyPI with trusted publishing (OIDC):
+#   tag lc-v*      -> integrations/langchain  (langchain-liquidvision)
+#   tag crewai-v*  -> integrations/crewai     (crewai-liquidvision)
+# PyPI side, per project: Publishing -> pending publisher, owner lv-analytics,
+# repo liquidvision-mcp, workflow publish-pypi-integrations.yml, environment pypi.
+on:
+  push:
+    tags: ["lc-v*", "crewai-v*"]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "langchain or crewai"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      dir: ${{ steps.pick.outputs.dir }}
+    steps:
+      - id: pick
+        run: |
+          ref="${GITHUB_REF_NAME}"; in="${{ inputs.package }}"
+          if [ "$in" = crewai ] || [[ "$ref" == crewai-v* ]]; then echo "dir=crewai" >> "$GITHUB_OUTPUT"; mod=crewai_liquidvision
+          else echo "dir=langchain" >> "$GITHUB_OUTPUT"; mod=langchain_liquidvision; fi
+          echo "MOD=$mod" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade build
+      - run: python -m build integrations/${{ steps.pick.outputs.dir }}
+      - run: |
+          python -m pip install integrations/${{ steps.pick.outputs.dir }}/dist/*.whl
+          python -c "import $MOD as m; print(m.__version__, [n for n in dir(m) if not n.startswith('_')])"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: integrations/${{ steps.pick.outputs.dir }}/dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

@@ -228,7 +228,7 @@ export const fundingAction = action({
   similes: ["FUNDING_DISPERSION", "FUNDING_CARRY", "FUNDING_ARBITRAGE", "CHEAPEST_FUNDING"],
   description: "Where the same coin pays very different funding across venues: the cheapest venue to be long and the richest to be short, each leg on its own settlement cycle.",
   words: /(funding|carry|basis trade|funding arb)/,
-  run: async (rt, sym) => { const d = await lv(rt, "/funding/dispersion"); return { text: summarizeDispersion(d, sym), data: d }; },
+  run: async (rt, sym) => { const d = await lv(rt, "/funding/dispersion", { limit: 200 }); return { text: summarizeDispersion(d, sym), data: d }; },
   example: ["where is funding cheapest for SOL?", "Funding disagreement across venues — SOL: long on bybit (+2.1%), short on kraken (+14.0%)…"],
 });
 

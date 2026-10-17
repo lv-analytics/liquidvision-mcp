@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crewai-liquidvision"
+version = "0.1.0"
+description = "CrewAI tools for LiquidVision.app crypto derivatives data: open interest, funding and liquidations on 13 venues, liquidation cascades, positioning regime, measured Hyperliquid liquidation maps, funding dispersion, tokenized stocks. Read-only, no key needed."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["crewai>=0.100"]
+keywords = ["crewai", "crew", "tools", "crypto", "derivatives", "liquidations", "open interest", "funding rate", "hyperliquid", "trading", "ai agent"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Office/Business :: Financial",
+    "Intended Audience :: Developers",
+]
+
+[project.urls]
+Homepage = "https://liquidvision.app"
+Documentation = "https://liquidvision.app/llms.txt"
+Source = "https://github.com/lv-analytics/liquidvision-mcp/tree/main/integrations/crewai"
+
+[tool.setuptools]
+packages = ["crewai_liquidvision"]
