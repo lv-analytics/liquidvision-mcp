@@ -21,7 +21,7 @@ import type {
 } from "@elizaos/core";
 
 const DEFAULT_BASE = "https://liquidvision.app/api/v1";
-const UA = "plugin-liquidvision/0.1.0";
+const UA = "plugin-liquidvision/0.1.1";
 
 // ---------------------------------------------------------------- helpers
 

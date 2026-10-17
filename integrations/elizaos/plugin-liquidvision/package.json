@@ -1,6 +1,6 @@
 {
   "name": "plugin-liquidvision",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ElizaOS plugin for LiquidVision.app: exchange-exact crypto derivatives context for agents — open interest, liquidations, cascades, positioning regime (new longs vs short covering), measured Hyperliquid liquidation maps, funding dispersion across 13 venues, tokenized stocks on DEXs. Read-only, no key needed.",
   "type": "module",
   "main": "dist/index.js",
@@ -18,8 +18,9 @@
   "author": "LiquidVision.app",
   "license": "MIT",
   "homepage": "https://liquidvision.app",
-  "repository": { "type": "git", "url": "https://github.com/lv-analytics/liquidvision-mcp", "directory": "integrations/elizaos/plugin-liquidvision" },
+  "repository": { "type": "git", "url": "git+https://github.com/lv-analytics/liquidvision-mcp.git", "directory": "integrations/elizaos/plugin-liquidvision" },
   "peerDependencies": { "@elizaos/core": "^1.7.2" },
+  "peerDependenciesMeta": { "@elizaos/core": { "optional": true } },
   "devDependencies": { "@elizaos/core": "^1.7.2", "typescript": "^5.6.0" },
   "agentConfig": {
     "pluginType": "elizaos:plugin:1.0.0",
