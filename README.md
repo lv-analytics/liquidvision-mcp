@@ -112,7 +112,9 @@ lv.package("liquidations", "2026-08", "liq_2026-08.parquet")
 ## Integrations
 
 Drop-in pieces for agent frameworks and trading bots, all on the free endpoints and fail-open:
-[ElizaOS plugin](integrations/elizaos/plugin-liquidvision), [Freqtrade guard](integrations/freqtrade/LiquidVisionGuard.py),
+[LangChain / LangGraph toolkit](integrations/langchain) (`pip install langchain-liquidvision`, listed in the
+[LangChain integrations docs](https://docs.langchain.com/oss/python/integrations/tools)), [CrewAI tools](integrations/crewai)
+(`pip install crewai-liquidvision`), [ElizaOS plugin](integrations/elizaos/plugin-liquidvision), [Freqtrade guard](integrations/freqtrade/LiquidVisionGuard.py),
 [Hummingbot cascade guard](integrations/hummingbot/liquidvision_cascade_guard.py). Overview: [`integrations/`](integrations).
 
 ## Examples

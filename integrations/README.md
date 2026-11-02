@@ -9,7 +9,7 @@ host keeps working as before.
 | **ElizaOS** | 6 actions + a provider: derivatives brief, positioning regime, liquidation cascades, measured Hyperliquid liquidation map, funding dispersion, tokenized stocks | [`elizaos/plugin-liquidvision`](elizaos/plugin-liquidvision) |
 | **Freqtrade** | `LiquidVisionGuard` mixin: refuses entries while a liquidation cascade runs on the pair or while longs are being flushed (`long_flush` regime) | [`freqtrade/LiquidVisionGuard.py`](freqtrade/LiquidVisionGuard.py) |
 | **Hummingbot** | Script: market-makes one perp and pulls its quotes for N minutes after a cascade on that coin | [`hummingbot/liquidvision_cascade_guard.py`](hummingbot/liquidvision_cascade_guard.py) |
-| **LangChain / LangGraph** | `pip install langchain-liquidvision`: a toolkit with six read-only tools (brief, positioning regime, cascades, measured liquidation map, funding dispersion, tokenized stocks) | [`langchain`](langchain) |
+| **LangChain / LangGraph** | `pip install langchain-liquidvision`: a toolkit with six read-only tools (brief, positioning regime, cascades, measured liquidation map, funding dispersion, tokenized stocks). Listed in the [LangChain integrations docs](https://docs.langchain.com/oss/python/integrations/tools) | [`langchain`](langchain) |
 | **CrewAI** | `pip install crewai-liquidvision`: the same six tools as CrewAI `BaseTool`s | [`crewai`](crewai) |
 | **Passivbot** | Writes `ignored_coins` for coins with expensive funding or a running cascade | [`../examples/passivbot_funding_filter.py`](../examples/passivbot_funding_filter.py) |
 | **Claude Code** | Skill: which tool answers which question, how to read measured vs modeled data | [`../skills/liquidvision`](../skills/liquidvision) |

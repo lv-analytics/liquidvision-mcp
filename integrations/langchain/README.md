@@ -1,7 +1,8 @@
 # langchain-liquidvision
 
 Crypto derivatives tools for LangChain and LangGraph agents, from [LiquidVision.app](https://liquidvision.app).
-Read-only, no key needed.
+Read-only, no key needed. Listed in the official [LangChain integrations docs](https://docs.langchain.com/oss/python/integrations/tools)
+(providers: LiquidVisionToolkit).
 
 ```bash
 pip install langchain-liquidvision
