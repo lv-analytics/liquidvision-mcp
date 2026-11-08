@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crewai-liquidvision"
-version = "0.1.0"
+version = "0.2.0"
 description = "CrewAI tools for LiquidVision.app crypto derivatives data: open interest, funding and liquidations on 13 venues, liquidation cascades, positioning regime, measured Hyperliquid liquidation maps, funding dispersion, tokenized stocks. Read-only, no key needed."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "langchain-liquidvision"
-version = "0.1.1"
-description = "LangChain tools for LiquidVision.app crypto derivatives data: open interest, funding and liquidations on 13 venues, liquidation cascades, positioning regime, measured Hyperliquid liquidation maps, funding dispersion, tokenized stocks. Read-only, no key needed."
+version = "0.2.0"
+description = "LangChain tools for LiquidVision.app crypto derivatives data: open interest, funding and liquidations on 13 venues, liquidation cascades, positioning regime, measured Hyperliquid liquidation maps, funding dispersion, tokenized stocks, plus ask (one-call answer), check_position (your liquidation price per venue from real margin tiers) and test_rule (a trigger tested against the archive). Read-only, no key needed."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }

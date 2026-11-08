@@ -2,7 +2,7 @@
 langchain-liquidvision: crypto derivatives tools for LangChain / LangGraph agents.
 
     from langchain_liquidvision import LiquidVisionToolkit
-    tools = LiquidVisionToolkit().get_tools()     # six read-only tools, no key needed
+    tools = LiquidVisionToolkit().get_tools()     # nine read-only tools, no key needed
 
 Data from LiquidVision.app: open interest, funding and liquidations on 13
 venues, liquidation cascades, positioning regime, measured Hyperliquid
@@ -40,9 +40,27 @@ class _Tokenized(BaseModel):
     limit: int = Field(15, description="How many of the largest markets to return")
 
 
+class _Ask(_Symbol):
+    question: str = Field(..., description="Plain-words question, e.g. 'why did ETH drop', 'is SOL funding crowded'")
+
+
+class _Position(_Symbol):
+    side: str = Field(..., description="long | short")
+    entry: float = Field(..., description="Entry price in USDT")
+    leverage: float = Field(..., description="Leverage, e.g. 20")
+    notional_usd: float = Field(10_000, description="Position size in USD")
+    venue: Optional[str] = Field(None, description="Venue id (binance, bybit, okx, bitget, gate, kucoin, kraken, "
+                                                   "hyperliquid, htx, mexc, bingx, aster); omit for all venues")
+
+
+class _Rule(_Symbol):
+    rules: str = Field(..., description="Up to 3 rules, e.g. 'funding_apr_pct>40,oi_chg_24h_pct>5'")
+
+
 _SCHEMAS = {
     "brief": _Symbol, "positioning_regime": _Regime, "liquidation_cascades": _Cascades,
     "liquidation_map": _Symbol, "funding_dispersion": _OptSymbol, "tokenized_stocks": _Tokenized,
+    "ask": _Ask, "check_position": _Position, "test_rule": _Rule,
 }
 
 
@@ -57,7 +75,7 @@ def get_tools(api_key: Optional[str] = None, base_url: Optional[str] = None) -> 
 
 
 class LiquidVisionToolkit(BaseToolkit):
-    """Six read-only LiquidVision.app tools. api_key is optional (raises the rate limit)."""
+    """Nine read-only LiquidVision.app tools (ask, check_position, test_rule added in 0.2.0). api_key is optional (raises the rate limit)."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     api_key: Optional[str] = None

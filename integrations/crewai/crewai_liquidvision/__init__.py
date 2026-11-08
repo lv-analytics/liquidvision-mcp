@@ -22,6 +22,7 @@ __all__ = [
     "liquidvision_tools", "LiquidVisionAPI", "norm_symbol", "__version__",
     "DerivativesBriefTool", "PositioningRegimeTool", "LiquidationCascadesTool",
     "LiquidationMapTool", "FundingDispersionTool", "TokenizedStocksTool",
+    "AskTool", "CheckPositionTool", "TestRuleTool",
 ]
 _SPEC = {m: (n, d) for n, m, d in TOOL_SPECS}
 
@@ -89,8 +90,41 @@ class TokenizedStocksTool(_LVTool):
     args_schema: Type[BaseModel] = _Tokenized
 
 
+class _Ask(_Symbol):
+    question: str = Field(..., description="Plain-words question, e.g. 'why did ETH drop', 'is SOL funding crowded'")
+
+
+class _Position(_Symbol):
+    side: str = Field(..., description="long | short")
+    entry: float = Field(..., description="Entry price in USDT")
+    leverage: float = Field(..., description="Leverage, e.g. 20")
+    notional_usd: float = Field(10_000, description="Position size in USD")
+    venue: Optional[str] = Field(None, description="Venue id (binance, bybit, okx, bitget, gate, kucoin, kraken, "
+                                                   "hyperliquid, htx, mexc, bingx, aster); omit for all venues")
+
+
+class _Rule(_Symbol):
+    rules: str = Field(..., description="Up to 3 rules, e.g. 'funding_apr_pct>40,oi_chg_24h_pct>5'")
+
+
+class AskTool(_LVTool):
+    lv_method: ClassVar[str] = "ask"
+    args_schema: Type[BaseModel] = _Ask
+
+
+class CheckPositionTool(_LVTool):
+    lv_method: ClassVar[str] = "check_position"
+    args_schema: Type[BaseModel] = _Position
+
+
+class TestRuleTool(_LVTool):
+    lv_method: ClassVar[str] = "test_rule"
+    args_schema: Type[BaseModel] = _Rule
+
+
 def liquidvision_tools(api_key: Optional[str] = None, base_url: Optional[str] = None) -> List[BaseTool]:
-    """All six tools. api_key is optional (raises the rate limit from 60 to 600/1,200 a minute)."""
+    """All nine tools (ask, check_position, test_rule added in 0.2.0). api_key is optional
+    (raises the rate limit from 60 to 600/1,200 a minute; test_rule needs one)."""
     return [cls(api_key=api_key, base_url=base_url) for cls in (
-        DerivativesBriefTool, PositioningRegimeTool, LiquidationCascadesTool,
-        LiquidationMapTool, FundingDispersionTool, TokenizedStocksTool)]
+        AskTool, DerivativesBriefTool, PositioningRegimeTool, LiquidationCascadesTool,
+        LiquidationMapTool, FundingDispersionTool, TokenizedStocksTool, CheckPositionTool, TestRuleTool)]

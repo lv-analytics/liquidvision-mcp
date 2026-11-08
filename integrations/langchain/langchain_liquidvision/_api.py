@@ -1,7 +1,7 @@
 """
 Shared core for the LiquidVision.app agent-framework wrappers.
 
-Six read-only questions an agent asks about crypto derivatives, each answered
+Nine read-only questions an agent asks about crypto derivatives, each answered
 from LiquidVision.app's free "conclusion" endpoints and trimmed to a compact
 JSON answer an LLM can read in one pass. No key needed (60 requests a minute
 per IP); LIQUIDVISION_API_KEY raises the limit. Standard library only.
@@ -16,7 +16,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 DEFAULT_BASE = "https://liquidvision.app/api/v1"
 
 
@@ -155,8 +155,60 @@ class LiquidVisionAPI:
             "largest": [{k: r.get(k) for k in keep} for r in rows],
         }
 
+    # ------------------------------------------------------- added in 0.2.0
+
+    def ask(self, question: str, symbol: str = "BTCUSDT") -> Dict[str, Any]:
+        coin = (norm_symbol(symbol) or "BTCUSDT")[:-4]
+        a = self.get("/answer", q=question, coin=coin)
+        return {
+            "symbol": a.get("symbol"),
+            "answer": a.get("answer"),
+            "facts": a.get("facts"),
+            "caveats": a.get("caveats"),
+            "sources": [{"path": s.get("path"), "age_s": s.get("age_s")} for s in a.get("sources") or []],
+            "note": "facts from the live endpoints, no model involved; figures, not advice",
+        }
+
+    def check_position(self, side: str, entry: float, leverage: float, symbol: str = "BTCUSDT",
+                       notional_usd: float = 10_000, venue: Optional[str] = None) -> Dict[str, Any]:
+        coin = (norm_symbol(symbol) or "BTCUSDT")[:-4]
+        p = self.get("/position/check", symbol=coin, side=side, entry=entry, leverage=leverage,
+                     notional_usd=notional_usd, venue=venue)
+        keep = ("venue", "maintenance_margin_rate", "mmr_source", "liquidation_price", "distance_pct",
+                "funding_cost_per_day_usd")
+        return {
+            "symbol": p.get("symbol"), "side": p.get("side"), "mark": p.get("mark"),
+            "unrealized_pnl_pct_of_margin": p.get("unrealized_pnl_pct_of_margin"),
+            "venues": [{k: v.get(k) for k in keep} for v in p.get("venues") or []],
+            "leverage_between_mark_and_liquidation": p.get("leverage_between_mark_and_liquidation"),
+            "archive": p.get("archive"),
+            "assumptions": p.get("assumptions"),
+        }
+
+    def test_rule(self, rules: str, symbol: str = "BTCUSDT") -> Dict[str, Any]:
+        coin = (norm_symbol(symbol) or "BTCUSDT")[:-4]
+        r = self.get("/rules/test", rules=rules, symbol=coin)
+        out = {k: r.get(k) for k in ("symbol", "rule", "true_now", "now", "archive", "matched_hours", "episodes_n",
+                                     "outcomes", "base_rate", "verdict", "note")}
+        out["episodes_last"] = (r.get("episodes") or [])[-5:]
+        return out
+
 
 TOOL_SPECS = [
+    ("liquidvision_ask", "ask",
+     "Ask a plain-words question about one coin's derivatives market (why did it drop, is funding crowded, where "
+     "is leverage stacked) and get short statements with the numbers in them, the facts as JSON and the sources' "
+     "age. No model involved. Input: question, symbol."),
+    ("liquidvision_check_position", "check_position",
+     "Check YOUR OWN position: liquidation price on each venue from that venue's maintenance-margin tier, distance "
+     "from the mark, how much modeled and measured leverage sits between the mark and your liquidation, funding "
+     "cost per day, how often price moved that far against you in the archive. Input: side (long|short), entry, "
+     "leverage, symbol, notional_usd, optional venue."),
+    ("liquidvision_test_rule", "test_rule",
+     "Test a trigger against the hourly archive before acting on it: rules like 'funding_apr_pct>40,oi_chg_24h_pct>5' "
+     "(metrics: price_chg_1h_pct, price_chg_24h_pct, oi_chg_1h_pct, oi_chg_24h_pct, funding_apr_pct, long_pct, "
+     "liq_1h_usd, liq_24h_usd); returns the episodes, 24h/72h outcomes, base rate and whether it is true now. "
+     "Needs LIQUIDVISION_API_KEY (a free key allows 100 such calls a day)."),
     ("liquidvision_derivatives_brief", "brief",
      "One-coin crypto derivatives snapshot: price, open interest by venue, liquidations by side, funding per "
      "exchange, nearest liquidation zones, top-trader positioning. Input: symbol like BTC or ETHUSDT."),
