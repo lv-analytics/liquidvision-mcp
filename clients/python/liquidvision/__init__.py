@@ -12,7 +12,7 @@
     lv.tokenized_stocks()                    # stocks / indices / commodities / FX as perps on DEXs
     rows = lv.export("liquidations", symbol="BTCUSDT", start="2026-09-01", end="2026-09-08")
 
-Pay-per-call without an account (x402, USDC on Arbitrum One):
+Pay-per-call without an account (x402, USDC on Base or Arbitrum One):
 
     from liquidvision import LiquidVision, X402Payer
     lv = LiquidVision(payer=X402Payer(private_key="0x..."))     # pip install liquidvision[x402]
@@ -38,11 +38,18 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = ["LiquidVision", "LiquidVisionError", "PaymentRequired", "X402Payer", "verify_signature"]
 
 USDC_ARBITRUM = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
 ARBITRUM_CHAIN_ID = 42161
+USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+BASE_CHAIN_ID = 8453
+# network id (x402 v1 name or CAIP-2) -> (canonical v1 name, chain id, USDC contract)
+X402_NETWORKS = {
+    "arbitrum": ("arbitrum", ARBITRUM_CHAIN_ID, USDC_ARBITRUM), "eip155:42161": ("arbitrum", ARBITRUM_CHAIN_ID, USDC_ARBITRUM),
+    "base": ("base", BASE_CHAIN_ID, USDC_BASE), "eip155:8453": ("base", BASE_CHAIN_ID, USDC_BASE),
+}
 
 
 class LiquidVisionError(Exception):
@@ -77,7 +84,7 @@ class X402Payer:
     replayed or re-priced. max_usd_per_call is your own ceiling.
     """
 
-    def __init__(self, private_key: str, max_usd_per_call: float = 5.0):
+    def __init__(self, private_key: str, max_usd_per_call: float = 5.0, network: str | None = None):
         try:
             from eth_account import Account
         except ImportError as e:   # pragma: no cover
@@ -85,6 +92,16 @@ class X402Payer:
         self._acct = Account.from_key(private_key)
         self.address = self._acct.address
         self.max_usd_per_call = max_usd_per_call
+        self.network = network   # "base" or "arbitrum" to insist on one rail; None = the first offer we can sign
+
+    def choose(self, accepts: list) -> dict | None:
+        """Pick the offer to pay from a 402's `accepts`: the preferred network if set,
+        else the first one this payer can sign (USDC on Base or Arbitrum)."""
+        ok = [a for a in accepts or [] if a.get("network") in X402_NETWORKS
+              and a.get("asset", "").lower() == X402_NETWORKS[a["network"]][2].lower()]
+        if self.network:
+            ok = [a for a in ok if X402_NETWORKS[a["network"]][0] == self.network]
+        return ok[0] if ok else None
 
     def sign(self, requirements: dict) -> str:
         """Return the base64 X-PAYMENT header for one v1 PaymentRequirements object."""
@@ -93,9 +110,10 @@ class X402Payer:
         value = int(requirements["maxAmountRequired"])
         if value > self.max_usd_per_call * 1_000_000:
             raise PaymentRequired(f"server asks {value / 1e6:.2f} USDC, above max_usd_per_call", requirements)
-        if (requirements.get("asset", USDC_ARBITRUM).lower() != USDC_ARBITRUM.lower()
-                or requirements.get("network") not in ("arbitrum", "eip155:42161")):
-            raise PaymentRequired("this payer only signs USDC on Arbitrum One", requirements)
+        net = X402_NETWORKS.get(requirements.get("network") or "arbitrum")
+        if net is None or requirements.get("asset", net[2]).lower() != net[2].lower():
+            raise PaymentRequired("this payer signs USDC on Base or Arbitrum One only", requirements)
+        net_name, chain_id, usdc = net
         now = int(time.time())
         nonce = os.urandom(32)
         auth = {"from": self.address, "to": requirements["payTo"], "value": value,
@@ -113,13 +131,13 @@ class X402Payer:
             },
             "primaryType": "TransferWithAuthorization",
             "domain": {"name": extra.get("name", "USD Coin"), "version": extra.get("version", "2"),
-                       "chainId": ARBITRUM_CHAIN_ID, "verifyingContract": USDC_ARBITRUM},
+                       "chainId": chain_id, "verifyingContract": usdc},
             "message": auth,
         }
         sig = self._acct.sign_message(encode_typed_data(full_message=typed)).signature.hex()
         if not sig.startswith("0x"):
             sig = "0x" + sig
-        payload = {"x402Version": 1, "scheme": "exact", "network": "arbitrum",
+        payload = {"x402Version": 1, "scheme": "exact", "network": net_name,
                    "payload": {"signature": sig, "authorization": {
                        "from": auth["from"], "to": auth["to"], "value": str(auth["value"]),
                        "validAfter": str(auth["validAfter"]), "validBefore": str(auth["validBefore"]),
@@ -166,7 +184,9 @@ class LiquidVision:
             except ValueError:
                 detail = raw[:300].decode(errors="replace")
             if e.code == 402:
-                reqs = detail["accepts"][0] if isinstance(detail, dict) and detail.get("accepts") else None
+                accepts = detail.get("accepts") if isinstance(detail, dict) else None
+                # several rails may be offered (Base, Arbitrum): take the one the payer can sign
+                reqs = (self.payer.choose(accepts) if self.payer else None) or (accepts[0] if accepts else None)
                 err = detail.get("error", detail) if isinstance(detail, dict) else detail
                 # one automatic payment attempt when a payer is configured and the caller asked to pay
                 if reqs and pay and self.payer and _payment is None:

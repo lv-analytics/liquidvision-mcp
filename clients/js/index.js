@@ -28,6 +28,21 @@
 export const VERSION = "0.2.0";
 export const USDC_ARBITRUM = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 export const ARBITRUM_CHAIN_ID = 42161;
+const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const BASE_CHAIN_ID = 8453;
+// network id (x402 v1 name or CAIP-2) -> [canonical v1 name, chain id, USDC contract]
+const X402_NETWORKS = {
+  "arbitrum": ["arbitrum", ARBITRUM_CHAIN_ID, USDC_ARBITRUM], "eip155:42161": ["arbitrum", ARBITRUM_CHAIN_ID, USDC_ARBITRUM],
+  "base": ["base", BASE_CHAIN_ID, USDC_BASE], "eip155:8453": ["base", BASE_CHAIN_ID, USDC_BASE],
+};
+
+/** Pick the offer to pay from a 402's `accepts`: payer.network ("base" | "arbitrum") if set, else the first signable one. */
+export function chooseX402(payer, accepts) {
+  let ok = (accepts ?? []).filter((a) => X402_NETWORKS[a.network] &&
+    (a.asset ?? "").toLowerCase() === X402_NETWORKS[a.network][2].toLowerCase());
+  if (payer?.network) ok = ok.filter((a) => X402_NETWORKS[a.network][0] === payer.network);
+  return ok[0] ?? null;
+}
 
 export class LiquidVisionError extends Error {
   constructor(status, detail) {
@@ -73,10 +88,11 @@ export async function signX402(payer, requirements) {
   if (value > BigInt(Math.round(maxUsd * 1_000_000))) {
     throw new PaymentRequired(`server asks ${Number(value) / 1e6} USDC, above maxUsdPerCall`, requirements);
   }
-  if ((requirements.asset ?? USDC_ARBITRUM).toLowerCase() !== USDC_ARBITRUM.toLowerCase() ||
-      !["arbitrum", "eip155:42161"].includes(requirements.network)) {
-    throw new PaymentRequired("this payer only signs USDC on Arbitrum One", requirements);
+  const net = X402_NETWORKS[requirements.network ?? "arbitrum"];
+  if (!net || (requirements.asset ?? net[2]).toLowerCase() !== net[2].toLowerCase()) {
+    throw new PaymentRequired("this payer signs USDC on Base or Arbitrum One only", requirements);
   }
+  const [netName, chainId, usdc] = net;
   const now = Math.floor(Date.now() / 1000);
   const nonceBytes = crypto.getRandomValues(new Uint8Array(32));
   const nonce = "0x" + [...nonceBytes].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -86,7 +102,7 @@ export async function signX402(payer, requirements) {
   };
   const extra = requirements.extra ?? {};
   const signature = await payer.signTypedData({
-    domain: { name: extra.name ?? "USD Coin", version: extra.version ?? "2", chainId: ARBITRUM_CHAIN_ID, verifyingContract: USDC_ARBITRUM },
+    domain: { name: extra.name ?? "USD Coin", version: extra.version ?? "2", chainId, verifyingContract: usdc },
     types: {
       TransferWithAuthorization: [
         { name: "from", type: "address" }, { name: "to", type: "address" }, { name: "value", type: "uint256" },
@@ -97,7 +113,7 @@ export async function signX402(payer, requirements) {
     message: authorization,
   });
   return b64({
-    x402Version: 1, scheme: "exact", network: "arbitrum",
+    x402Version: 1, scheme: "exact", network: netName,
     payload: { signature, authorization: { ...authorization, value: value.toString(),
       validAfter: authorization.validAfter.toString(), validBefore: authorization.validBefore.toString() } },
   });
@@ -128,7 +144,7 @@ export class LiquidVision {
     if (r.status === 402) {
       let j = null;
       try { j = await r.json(); } catch { /* not JSON */ }
-      const reqs = j?.accepts?.[0] ?? null;
+      const reqs = (this.payer ? chooseX402(this.payer, j?.accepts) : null) ?? j?.accepts?.[0] ?? null;
       if (reqs && pay && this.payer && !payment) {
         return this._request(method, path, params, body, { payment: await signX402(this.payer, reqs) });
       }
