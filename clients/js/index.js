@@ -25,7 +25,7 @@
  * MCP for agents: https://liquidvision.app/mcp/lite (13 tools) and /mcp (42).
  */
 
-export const VERSION = "0.2.0";
+export const VERSION = "0.3.0";
 export const USDC_ARBITRUM = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 export const ARBITRUM_CHAIN_ID = 42161;
 const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
