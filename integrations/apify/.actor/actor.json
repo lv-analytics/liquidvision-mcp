@@ -1,0 +1,23 @@
+{
+  "actorSpecification": 1,
+  "name": "crypto-derivatives-answers",
+  "title": "Crypto Derivatives Answers: liquidation map, funding carry, rule backtest",
+  "description": "Liquidation price on 12 exchanges from their real margin tiers, liquidation maps, funding carry across 13 venues, and a trading-rule backtest on up to 100 perpetuals. Data from LiquidVision.app.",
+  "version": "0.1",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "Answer",
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "transformation": { "fields": ["mode", "symbol", "summary", "source"] },
+          "display": { "component": "table" }
+        }
+      }
+    }
+  }
+}

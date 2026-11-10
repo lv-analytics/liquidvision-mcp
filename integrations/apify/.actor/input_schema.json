@@ -1,0 +1,83 @@
+{
+  "title": "Crypto derivatives answer",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "What to compute",
+      "type": "string",
+      "description": "One answer per run.",
+      "editor": "select",
+      "default": "position_check",
+      "enum": ["position_check", "liquidation_map", "funding_carry", "rule_test", "rule_scan", "market_brief"],
+      "enumTitles": [
+        "Position check: liquidation price on 12 exchanges",
+        "Liquidation map: where leverage sits around price",
+        "Funding carry: best venue pairs, measured out of sample",
+        "Rule test: when was this condition true, what happened next (one coin)",
+        "Rule scan: the same rule on up to 100 coins",
+        "Market brief: positioning of one coin in plain statements"
+      ]
+    },
+    "symbol": {
+      "title": "Coin",
+      "type": "string",
+      "description": "Base asset: BTC, ETH, SOL, DOGE... Used by position_check, liquidation_map, rule_test, market_brief.",
+      "editor": "textfield",
+      "default": "BTC"
+    },
+    "side": {
+      "title": "Position side",
+      "type": "string",
+      "description": "position_check only.",
+      "editor": "select",
+      "default": "long",
+      "enum": ["long", "short"]
+    },
+    "entry": {
+      "title": "Entry price",
+      "type": "string",
+      "description": "position_check only. A number, e.g. 74000.",
+      "editor": "textfield"
+    },
+    "leverage": {
+      "title": "Leverage",
+      "type": "integer",
+      "description": "position_check only.",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 200
+    },
+    "notionalUsd": {
+      "title": "Position size, USD",
+      "type": "integer",
+      "description": "position_check only. The maintenance-margin bracket depends on it.",
+      "default": 10000,
+      "minimum": 10
+    },
+    "range": {
+      "title": "Map window",
+      "type": "string",
+      "description": "liquidation_map only: positions opened in this window.",
+      "editor": "select",
+      "default": "1d",
+      "enum": ["12h", "1d", "3d", "7d"]
+    },
+    "rules": {
+      "title": "Rule",
+      "type": "string",
+      "description": "rule_test and rule_scan. Up to 3 conditions joined by commas, each metric>threshold or metric<threshold. Metrics: funding_apr_pct, oi_chg_1h_pct, oi_chg_24h_pct, price_chg_1h_pct, price_chg_24h_pct, liq_1h_usd, liq_24h_usd, long_pct. Example: funding_apr_pct<-20,price_chg_24h_pct<-5",
+      "editor": "textfield",
+      "default": "liq_24h_usd>5000000,price_chg_24h_pct<-5"
+    },
+    "coins": {
+      "title": "Coins to scan",
+      "type": "integer",
+      "description": "rule_scan only: the largest by open interest first.",
+      "default": 50,
+      "minimum": 5,
+      "maximum": 100
+    }
+  },
+  "required": ["mode"]
+}
