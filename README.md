@@ -117,6 +117,16 @@ Drop-in pieces for agent frameworks and trading bots, all on the free endpoints 
 (`pip install crewai-liquidvision`), [ElizaOS plugin](integrations/elizaos/plugin-liquidvision), [Freqtrade guard](integrations/freqtrade/LiquidVisionGuard.py),
 [Hummingbot cascade guard](integrations/hummingbot/liquidvision_cascade_guard.py). Overview: [`integrations/`](integrations).
 
+## Data sample
+
+A free one-week sample of the archive (liquidations from 11 feeds, open interest and funding per venue, settled
+funding, Hyperliquid and Lighter positions with liquidation prices) is on Hugging Face:
+[liquidvision/crypto-derivatives-sample](https://huggingface.co/datasets/liquidvision/crypto-derivatives-sample).
+The full archive since July 2026 comes as monthly Parquet files (`/export/packages`).
+
+An [Apify Actor](integrations/apify) wraps the answers (position check, liquidation map, funding carry, rule
+test and scan) for people who would rather pay per result than hold a key or a wallet.
+
 ## Examples
 
 - [`examples/passivbot_funding_filter.py`](examples/passivbot_funding_filter.py): keeps
