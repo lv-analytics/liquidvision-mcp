@@ -30,7 +30,7 @@
   "homepage": "https://liquidvision.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lv-analytics/liquidvision-mcp",
+    "url": "git+https://github.com/lv-analytics/liquidvision-mcp.git",
     "directory": "clients/js"
   },
   "license": "MIT"
