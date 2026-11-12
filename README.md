@@ -1,13 +1,13 @@
 # LiquidVision.app — MCP server for crypto derivatives data
 
-Crypto derivatives data for AI agents and trading bots: a remote MCP server,
-no install, no API key needed.
+Crypto derivatives data and answers for AI agents and trading bots: a remote MCP server,
+no install; the conclusions and live snapshots need no API key.
 
-**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 42 tools, read-only; the raw-row tools need a Pro/Bot key sent as `X-API-Key`, the conclusion tools do not)
-**Lite endpoint:** `https://liquidvision.app/mcp/lite` — the 13 tools that return conclusions (brief, explain, regime, cascades, dispersion, carry, microstructure, three liquidation maps, tokenized stocks, accuracy). Start here if your agent answers questions; use the full server for raw rows, history and alerts.
+**Endpoint:** `https://liquidvision.app/mcp` (Streamable HTTP, 60 tools, read-only). Conclusions and live snapshots are free. History, positions and the priced answers (smart money and top traders on Hyperliquid, trader profiles, derivatives fear & greed, crypto Twitter pulse, Polymarket odds, a Morpho DeFi liquidation map, position checks, rule tests and scans) are metered: a free key sent as `X-API-Key` includes 100 units a day (a row is 1 unit, a rule test 20), or pay per call in USDC (x402 on Base or Arbitrum; also MPP, Nevermined, Skyfire), with prepaid credits or a $1 day pass.
+**Lite endpoint:** `https://liquidvision.app/mcp/lite` — the 19 tools that return conclusions (ask, brief, explain, regime, cascades, dispersion, carry, microstructure, three liquidation maps, tokenized stocks, HIP-3 board, Detective events, accuracy, position check; precedents and rule test are priced). Start here if your agent answers questions; use the full server for raw rows, history and alerts.
 **Discovery:** `/.well-known/agent-card.json`, `/.well-known/mcp.json`, `/.well-known/x402.json`; worked examples at `/llms-full.txt`.
 
-**Registry:** `server.json` in this repo is the manifest for the Official MCP Registry (`io.github.lv-analytics/liquidvision`); also listed on [Glama](https://glama.ai/mcp/connectors/app.liquidvision/derivatives) and in [awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers).
+**Registry:** `server.json` in this repo is the manifest for the Official MCP Registry (`app.liquidvision/derivatives`); also listed on [Glama](https://glama.ai/mcp/connectors/app.liquidvision/derivatives) and in [awesome-remote-mcp-servers](https://github.com/punkpeye/awesome-remote-mcp-servers).
 
 ## What it gives an agent
 
@@ -141,7 +141,7 @@ test and scan) for people who would rather pay per result than hold a key or a w
 
 ## Limits and honesty
 
-- Free and anonymous: the conclusion tools and the lite server, 60 requests/min per IP (120 with a free key); raw-row tools need a Pro/Bot key or x402;
+- Free and anonymous: the conclusion tools and the lite server, 60 requests/min per IP (120 with a free key); history, positions and priced answers are metered (a free key adds 100 units a day of history and positions (a row is 1 unit); Pro/Bot: 10,000 / 100,000 a day, exports, alerts; or pay per call, see https://liquidvision.app/agent-data);
   send it as `X-API-Key` or `Authorization: Bearer lv_...`. Paid plans (history
   exports, webhook alerts, higher limits): https://liquidvision.app/pricing
 - `explain_market` costs real money to run: 5 answers/day anonymous, 25 with a
@@ -155,8 +155,8 @@ test and scan) for people who would rather pay per result than hold a key or a w
   `singleOpenInterest`; Gate and HTX report both sides and are halved. An
   aggregator showing those venues at twice our figure is showing both sides.
   Commands to check this yourself: [docs/coinglass-vs-exchanges.md](docs/coinglass-vs-exchanges.md).
-- Liquidation events come from Binance, Bitget, OKX, Bybit, HTX, Gate, Kraken,
-  GMX (on-chain, complete) and Hyperliquid whale accounts. Binance and Bitget
+- Liquidation events come from Binance, Bitget, OKX, Bybit, HTX, Gate, Kraken, Aster,
+  GMX (on-chain, complete), Lighter and Hyperliquid whale accounts. Binance and Bitget
   throttle their feeds to one order per contract per second, so totals are a
   floor for the whole market.
 - The CEX liquidation map and heatmap are **models** built from candles and

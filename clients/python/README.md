@@ -15,7 +15,7 @@ pip install "liquidvision[x402]"    # + pay per call in USDC without an account 
 from liquidvision import LiquidVision
 
 lv = LiquidVision()                       # no key: the conclusions (brief, regime, cascades, maps, carry...), 60/min per IP
-# lv = LiquidVision(api_key="lv_...")     # free key: 120/min on the conclusions; Pro/Bot keys: raw rows, history, alerts
+# lv = LiquidVision(api_key="lv_...")     # free key: 120/min plus 100 units a day of history and positions; Pro/Bot: 10,000 / 100,000 a day, exports, alerts
 
 lv.brief("BTCUSDT")          # one coin, one JSON: liquidations by window, funding extremes, OI by venue, risk zones
 lv.regime(240)               # who is driving the move: new_longs / short_covering / new_shorts / long_flush per coin
@@ -52,7 +52,7 @@ lv.package("liquidations", "2026-08", "liq_2026-08.parquet")   # Pro: this and l
 
 ## Pay per call without an account (x402)
 
-An agent with a wallet can buy one file for one signed USDC payment on Arbitrum One. The key
+An agent with a wallet can buy one file for one signed USDC payment on Base or Arbitrum (same price; the client picks a network it can sign). The key
 never leaves your process: the server receives a signed `transferWithAuthorization` for exactly
 the asked amount, to the server's address, valid for a short window; a public facilitator
 submits it on-chain.
@@ -92,5 +92,5 @@ near its liquidation price), `cluster_sweep` (price reached a large modeled clus
 - Funding is annualized with each contract's own settlement cycle (1h / 4h / 8h).
 - Errors raise `LiquidVisionError` with `.status` and `.detail`; `PaymentRequired` for 402.
 
-For agents: MCP at `https://liquidvision.app/mcp/lite` (13 tools) and `/mcp` (42).
+For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (60).
 Endpoint list: https://liquidvision.app/llms.txt · plans: https://liquidvision.app/pricing

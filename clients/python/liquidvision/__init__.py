@@ -22,7 +22,7 @@ Pay-per-call without an account (x402, USDC on Base or Arbitrum One):
 Every dict answer carries age_s (seconds since the data was read from the
 exchange); rows of oi(), funding() and long_short() carry age_s each and
 stale=True when a venue feed is behind. Docs: https://liquidvision.app/llms.txt
-MCP for agents: https://liquidvision.app/mcp/lite (13 tools) and /mcp (42).
+MCP for agents: https://liquidvision.app/mcp/lite (19 tools) and /mcp (60).
 """
 from __future__ import annotations
 

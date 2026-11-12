@@ -13,7 +13,7 @@ npm install liquidvision
 import { LiquidVision } from "liquidvision";
 
 const lv = new LiquidVision();                       // no key: the conclusions only (brief, regime, cascades, maps, carry), 60/min per IP
-// const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 120/min on the conclusions; Pro/Bot: raw rows, history, alerts
+// const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 120/min plus 100 units a day of history and positions; Pro/Bot: 10,000 / 100,000 a day, exports, alerts
 
 await lv.brief("BTCUSDT");        // one coin, one JSON
 await lv.regime(240);             // new_longs / short_covering / new_shorts / long_flush per coin
@@ -42,7 +42,7 @@ const buf = await lv.package("liquidations", "2026-08"); // ArrayBuffer; Pro: th
 ## Pay per call without an account (x402)
 
 Bring any wallet that signs EIP-712 typed data (viem, ethers, a browser wallet). The client
-signs a USDC `transferWithAuthorization` on Arbitrum One for exactly the asked amount; a public
+signs a USDC `transferWithAuthorization` on Base or Arbitrum for exactly the asked amount; a public
 facilitator submits it on-chain. Your key never leaves your code.
 
 ```js
@@ -76,5 +76,5 @@ const ok = await verifySignature(secret, rawBody, req.headers["x-liquidvision-si
 - Errors throw `LiquidVisionError` (`.status`, `.detail`); `PaymentRequired` for 402.
 - Node inside some containers prefers IPv6 lookups; if `fetch` fails on TLS, run with `--dns-result-order=ipv4first`.
 
-For agents: MCP at `https://liquidvision.app/mcp/lite` (13 tools) and `/mcp` (42).
+For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (60).
 Endpoint list: https://liquidvision.app/llms.txt · plans: https://liquidvision.app/pricing

@@ -13,7 +13,7 @@ host keeps working as before.
 | **CrewAI** | `pip install crewai-liquidvision`: the same six tools as CrewAI `BaseTool`s | [`crewai`](crewai) |
 | **Passivbot** | Writes `ignored_coins` for coins with expensive funding or a running cascade | [`../examples/passivbot_funding_filter.py`](../examples/passivbot_funding_filter.py) |
 | **Claude Code** | Skill: which tool answers which question, how to read measured vs modeled data | [`../skills/liquidvision`](../skills/liquidvision) |
-| **Any MCP client** | `https://liquidvision.app/mcp/lite` (13 conclusion tools), `/mcp` (42) | — |
+| **Any MCP client** | `https://liquidvision.app/mcp/lite` (19 conclusion tools), `/mcp` (60) | — |
 
 ## Freqtrade
 

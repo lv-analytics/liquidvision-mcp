@@ -9,8 +9,9 @@ Use this skill when the user asks anything about crypto perpetual futures: who i
 where leverage sits, what got liquidated, what funding costs, whether a move is new money or
 short covering, or wants derivatives history for research. All data is public and read-only.
 The conclusions (brief, regime, cascades, maps, dispersion, carry, microstructure, tokenized
-stocks) and the lite MCP server are free without a key; raw rows per contract, history and
-alerts need a Pro/Bot key or one USDC payment per call (x402).
+stocks) and the live snapshots are free without a key; history, positions and the priced
+answers (smart money, top traders, fear & greed, rule tests...) are metered: a free key includes
+100 units a day (a row is 1 unit), or pay per call in USDC (x402), with prepaid credits or a $1 day pass.
 
 ## Three ways in, pick the first that fits
 
@@ -18,8 +19,8 @@ alerts need a Pro/Bot key or one USDC payment per call (x402).
    ```json
    { "mcpServers": { "liquidvision": { "url": "https://liquidvision.app/mcp/lite" } } }
    ```
-   13 tools that return conclusions. Start with `list_markets`, then `get_market_brief(symbol)`.
-   The full server with 42 tools (raw rows, history, alerts) is `https://liquidvision.app/mcp`.
+   19 tools that return conclusions. Start with `list_markets`, then `get_market_brief(symbol)`.
+   The full server with 60 tools (raw rows, history, priced answers, alerts) is `https://liquidvision.app/mcp`.
 2. **REST.** `GET https://liquidvision.app/api/v1/...`, JSON, CORS on. Endpoint list and worked
    examples: `https://liquidvision.app/llms.txt` and `https://liquidvision.app/llms-full.txt`.
 3. **Client libraries.** `pip install liquidvision` / `npm install liquidvision` (zero dependencies).
@@ -61,7 +62,7 @@ alerts need a Pro/Bot key or one USDC payment per call (x402).
 ## History and paying for it
 
 Free: the last 24 hours of any dataset. A Pro key: any 31-day CSV window; a Bot key: everything
-plus monthly Parquet packages. Without an account an agent can pay per call in USDC on Arbitrum
+plus monthly Parquet packages. Without an account an agent can pay per call in USDC on Base or Arbitrum
 (x402): `GET /export/package/{dataset}/{YYYY-MM}` answers 402 with the payment requirements
 ($1.00 per monthly file, $0.10 per CSV window with `?pay=x402`); any x402 client, or the
 `X402Payer` in the Python client, completes it. Terms: `GET /api/v1/x402`.
