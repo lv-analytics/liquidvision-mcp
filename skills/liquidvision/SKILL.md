@@ -20,7 +20,7 @@ answers (smart money, top traders, fear & greed, rule tests...) are metered: a f
    { "mcpServers": { "liquidvision": { "url": "https://liquidvision.app/mcp/lite" } } }
    ```
    19 tools that return conclusions. Start with `list_markets`, then `get_market_brief(symbol)`.
-   The full server with 60 tools (raw rows, history, priced answers, alerts) is `https://liquidvision.app/mcp`.
+   The full server with 69 tools (raw rows, history, priced answers, alerts) is `https://liquidvision.app/mcp`.
 2. **REST.** `GET https://liquidvision.app/api/v1/...`, JSON, CORS on. Endpoint list and worked
    examples: `https://liquidvision.app/llms.txt` and `https://liquidvision.app/llms-full.txt`.
 3. **Client libraries.** `pip install liquidvision` / `npm install liquidvision` (zero dependencies).

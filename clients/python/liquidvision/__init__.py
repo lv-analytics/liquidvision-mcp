@@ -1,14 +1,14 @@
 """LiquidVision.app API client. Standard library only; x402 pay-per-call needs `eth-account`.
 
     from liquidvision import LiquidVision
-    lv = LiquidVision()                      # no key: the conclusions only (brief, regime, cascades, maps, carry), 60/min per IP
+    lv = LiquidVision()                      # no key: the conclusions only (brief, regime, cascades, map summaries, carry), 60/min per IP
     lv = LiquidVision(api_key="lv_...")      # free key: 120/min on the conclusions; Pro/Bot: raw rows, history, alerts
 
     lv.brief("BTCUSDT")                      # one coin, one JSON: the place to start
     lv.regime(240)                           # who is driving the move: new longs / short covering / ...
     lv.cascades(hours=24)                    # liquidation cascades as events
-    lv.hl_liqmap("BTCUSDT")                  # MEASURED map from real Hyperliquid positions
-    lv.lighter_liqmap("BTCUSDT")             # same for Lighter
+    lv.liqlevels("BTCUSDT")                  # free summary of the liquidation map: USD each side, largest level
+    lv.liqlevels("BTCUSDT", venue="hyperliquid")   # the same from MEASURED Hyperliquid positions
     lv.tokenized_stocks()                    # stocks / indices / commodities / FX as perps on DEXs
     rows = lv.export("liquidations", symbol="BTCUSDT", start="2026-09-01", end="2026-09-08")
 
@@ -22,7 +22,7 @@ Pay-per-call without an account (x402, USDC on Base or Arbitrum One):
 Every dict answer carries age_s (seconds since the data was read from the
 exchange); rows of oi(), funding() and long_short() carry age_s each and
 stale=True when a venue feed is behind. Docs: https://liquidvision.app/llms.txt
-MCP for agents: https://liquidvision.app/mcp/lite (19 tools) and /mcp (60).
+MCP for agents: https://liquidvision.app/mcp/lite (19 tools) and /mcp (69).
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = ["LiquidVision", "LiquidVisionError", "PaymentRequired", "X402Payer", "verify_signature"]
 
 USDC_ARBITRUM = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
@@ -265,21 +265,38 @@ class LiquidVision:
     def liquidations_summary(self, minutes: int = 60) -> dict:
         return self._get("/liquidations/summary", minutes=minutes)
 
+    def liqlevels(self, symbol: str, venue: str = "cex", range: str = "1d") -> dict:
+        """FREE summary of a liquidation map: USD of longs liquidated below the price and of
+        shorts above it, and the largest level on each side. venue: cex (modeled, Binance /
+        Bybit / OKX) | hyperliquid | lighter (measured from real positions)."""
+        return self._get(f"/liqlevels/{symbol}", venue=venue, range=range)
+
+    def pretrade(self, symbol: str, side: str, leverage: float, notional_usd: float = 10_000,
+                 entry: float | None = None) -> dict:
+        """PRICED ($0.05): one answer before opening a leveraged position: liquidation price on
+        12 venues, the liquidation levels before it, how often price moved that far, fear &
+        greed, Hyperliquid whale positioning, funding cost, and `flags` for what goes against
+        the trade. Needs a key or a payer."""
+        return self._get("/pretrade", symbol=symbol, side=side, leverage=leverage,
+                         notional_usd=notional_usd, entry=entry)
+
     def liqmap(self, symbol: str, exchange: str = "all", range: str = "1d") -> dict:
-        """MODELED liquidation clusters per price bin (CEXs). How it scores: accuracy()."""
+        """MODELED liquidation clusters per price bin (CEXs). How it scores: accuracy().
+        Metered since 2026-11-13 ($0.005 a call): needs a key or a payer; liqlevels() is free."""
         return self._get(f"/liqmap/{symbol}", exchange=exchange, range=range)
 
     def liqheat(self, symbol: str, exchange: str = "all", range: str = "1d") -> dict:
-        """MODELED liquidation heatmap: grid[time][price bin] with the price path."""
+        """MODELED liquidation heatmap: grid[time][price bin] with the price path. Metered."""
         return self._get(f"/liqheat/{symbol}", exchange=exchange, range=range)
 
     # ---- measured positions: Hyperliquid and Lighter ----------------------
     def hl_liqmap(self, symbol: str, range: str = "1d") -> dict:
-        """MEASURED liquidation map from the ~10,000 largest Hyperliquid accounts."""
+        """MEASURED liquidation map from the ~10,000 largest Hyperliquid accounts. Metered
+        ($0.005 a call): needs a key or a payer; liqlevels(symbol, venue="hyperliquid") is free."""
         return self._get(f"/liqmap/hl/{symbol}", range=range)
 
     def lighter_liqmap(self, symbol: str, range: str = "1d") -> dict:
-        """MEASURED liquidation map from every Lighter account."""
+        """MEASURED liquidation map from every Lighter account. Metered ($0.005 a call)."""
         return self._get(f"/liqmap/lighter/{symbol}", range=range)
 
     def hl_whales(self, coin: str | None = None, side: str | None = None, min_usd: float = 100_000,

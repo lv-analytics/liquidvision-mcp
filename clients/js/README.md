@@ -12,7 +12,7 @@ npm install liquidvision
 ```js
 import { LiquidVision } from "liquidvision";
 
-const lv = new LiquidVision();                       // no key: the conclusions only (brief, regime, cascades, maps, carry), 60/min per IP
+const lv = new LiquidVision();                       // no key: the conclusions only (brief, regime, cascades, map summaries, carry), 60/min per IP
 // const lv = new LiquidVision({ apiKey: "lv_..." }); // free key: 120/min plus 100 units a day of history and positions; Pro/Bot: 10,000 / 100,000 a day, exports, alerts
 
 await lv.brief("BTCUSDT");        // one coin, one JSON
@@ -24,8 +24,12 @@ await lv.microstructure();        // spread, executable depth, cross-venue gap
 await lv.tokenizedStocks();       // stocks / indices / commodities / FX as perps on DEXs
 ```
 
-Measured, not modeled: `hlLiqmap`, `lighterLiqmap`, `hlWhales`, `lighterWhales`, `hlAccount`.
-Modeled, and scored: `liqmap`, `liqheat`; the score is in `(await lv.accuracy()).liqmap_validation`.
+Free: `liqlevels(symbol, { venue })` is the summary of a liquidation map (USD on each side of the
+price, the largest level on each side), for `cex`, `hyperliquid` or `lighter`.
+Measured, not modeled, metered ($0.005 a call, key or payer): `hlLiqmap`, `lighterLiqmap`, `hlWhales`,
+`lighterWhales`, `hlAccount`. Modeled, scored and metered since 2026-11-13: `liqmap`, `liqheat`; the
+score is in `(await lv.accuracy()).liqmap_validation`. One priced answer before a trade ($0.05):
+`pretrade("BTC", "long", 20, { notionalUsd: 50000 })`.
 
 Every object answer carries `age_s`; rows of `oi()`, `funding()`, `longShort()` carry `age_s`
 each and `stale: true` when a venue feed is behind.
@@ -76,5 +80,5 @@ const ok = await verifySignature(secret, rawBody, req.headers["x-liquidvision-si
 - Errors throw `LiquidVisionError` (`.status`, `.detail`); `PaymentRequired` for 402.
 - Node inside some containers prefers IPv6 lookups; if `fetch` fails on TLS, run with `--dns-result-order=ipv4first`.
 
-For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (60).
+For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (69).
 Endpoint list: https://liquidvision.app/llms.txt · plans: https://liquidvision.app/pricing

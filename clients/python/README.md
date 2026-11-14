@@ -14,10 +14,11 @@ pip install "liquidvision[x402]"    # + pay per call in USDC without an account 
 ```python
 from liquidvision import LiquidVision
 
-lv = LiquidVision()                       # no key: the conclusions (brief, regime, cascades, maps, carry...), 60/min per IP
+lv = LiquidVision()                       # no key: the conclusions (brief, regime, cascades, map summaries, carry...), 60/min per IP
 # lv = LiquidVision(api_key="lv_...")     # free key: 120/min plus 100 units a day of history and positions; Pro/Bot: 10,000 / 100,000 a day, exports, alerts
 
 lv.brief("BTCUSDT")          # one coin, one JSON: liquidations by window, funding extremes, OI by venue, risk zones
+lv.liqlevels("BTCUSDT")      # liquidation-map summary: USD on each side of the price, the largest level each side
 lv.regime(240)               # who is driving the move: new_longs / short_covering / new_shorts / long_flush per coin
 lv.cascades(hours=24)        # liquidation cascades as events, with what price did in the hour after
 lv.funding_dispersion()      # where the same coin pays very different funding (each leg on its own cycle)
@@ -29,13 +30,18 @@ lv.tokenized_stocks()        # stocks / indices / commodities / FX as perps on D
 Measured, not modeled:
 
 ```python
-lv.hl_liqmap("BTCUSDT")                        # real Hyperliquid positions binned by exchange-reported liquidation price
-lv.lighter_liqmap("BTCUSDT")                   # the same for Lighter
-lv.hl_whales(coin="BTC", max_dist_pct=5)       # positions within 5% of liquidation
+lv.liqlevels("BTCUSDT", venue="hyperliquid")   # free summary from real Hyperliquid positions (venue="lighter" too)
+lv.hl_liqmap("BTCUSDT")                        # every price level: metered, $0.005 a call (key or payer)
+lv.lighter_liqmap("BTCUSDT")                   # the same for Lighter, metered
+lv.hl_whales(coin="BTC", max_dist_pct=5)       # positions within 5% of liquidation, metered
 ```
 
-Modeled, and scored: `lv.liqmap("BTCUSDT")` is the CEX liquidation map (a model);
-`lv.accuracy()["liqmap_validation"]` is how it did against realized liquidations.
+Modeled, and scored: `lv.liqmap("BTCUSDT")` is the CEX liquidation map (a model, metered since
+2026-11-13); `lv.accuracy()["liqmap_validation"]` is how it did against realized liquidations.
+
+One priced answer before a trade: `lv.pretrade("BTC", "long", 20, notional_usd=50_000)` returns the
+liquidation price on 12 venues, the levels before it, whale positioning, funding cost and `flags`
+for what goes against the trade ($0.05; key or payer).
 
 Every dict answer carries `age_s` (seconds since the data was read from the exchange); rows
 of `oi()`, `funding()`, `long_short()` carry `age_s` each and `stale=True` when a venue feed is
@@ -92,5 +98,5 @@ near its liquidation price), `cluster_sweep` (price reached a large modeled clus
 - Funding is annualized with each contract's own settlement cycle (1h / 4h / 8h).
 - Errors raise `LiquidVisionError` with `.status` and `.detail`; `PaymentRequired` for 402.
 
-For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (60).
+For agents: MCP at `https://liquidvision.app/mcp/lite` (19 tools) and `/mcp` (69).
 Endpoint list: https://liquidvision.app/llms.txt · plans: https://liquidvision.app/pricing

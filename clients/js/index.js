@@ -201,15 +201,24 @@ export class LiquidVision {
   /** Raw liquidation events. Binance and Bitget are exchange-throttled: a floor. */
   liquidations(minutes = 60) { return this._get("/liquidations", { minutes }); }
   liquidationsSummary(minutes = 60) { return this._get("/liquidations/summary", { minutes }); }
-  /** MODELED liquidation clusters per price bin (CEXs). How it scores: accuracy(). */
+  /** FREE summary of a liquidation map: USD on each side of the price and the largest level
+   *  on each side. venue: cex (modeled) | hyperliquid | lighter (measured). */
+  liqlevels(symbol, { venue = "cex", range = "1d" } = {}) { return this._get(`/liqlevels/${symbol}`, { venue, range }); }
+  /** PRICED ($0.05): liquidation price on 12 venues, the levels before it, whale positioning,
+   *  funding cost and `flags` for what goes against the trade. Needs a key or a payer. */
+  pretrade(symbol, side, leverage, { notionalUsd = 10000, entry } = {}) {
+    return this._get("/pretrade", { symbol, side, leverage, notional_usd: notionalUsd, entry });
+  }
+  /** MODELED liquidation clusters per price bin (CEXs). How it scores: accuracy().
+   *  Metered since 2026-11-13 ($0.005 a call): needs a key or a payer; liqlevels() is free. */
   liqmap(symbol, { exchange = "all", range = "1d" } = {}) { return this._get(`/liqmap/${symbol}`, { exchange, range }); }
   /** MODELED liquidation heatmap: grid[time][price bin] with the price path. */
   liqheat(symbol, { exchange = "all", range = "1d" } = {}) { return this._get(`/liqheat/${symbol}`, { exchange, range }); }
 
   // ---- measured positions: Hyperliquid and Lighter ----
-  /** MEASURED liquidation map from the ~10,000 largest Hyperliquid accounts. */
+  /** MEASURED liquidation map from the ~10,000 largest Hyperliquid accounts. Metered ($0.005 a call). */
   hlLiqmap(symbol, { range = "1d" } = {}) { return this._get(`/liqmap/hl/${symbol}`, { range }); }
-  /** MEASURED liquidation map from every Lighter account. */
+  /** MEASURED liquidation map from every Lighter account. Metered ($0.005 a call). */
   lighterLiqmap(symbol, { range = "1d" } = {}) { return this._get(`/liqmap/lighter/${symbol}`, { range }); }
   /** Hyperliquid positions with exchange-reported liquidation prices, closest to liquidation first. */
   hlWhales({ coin, side, minUsd = 100000, maxDistPct, sort = "distance", limit = 100 } = {}) {
